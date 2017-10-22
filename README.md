@@ -1,2 +1,1 @@
-# kindpakket.zuidhorn.forus.io
-zuidhorn.forus.io/kindpakket
+# shopkeeper.zuidhorn.forus.io
