@@ -581,8 +581,7 @@ shopkeeperApp.component('panelProfileEditComponent', {
                 // fill profile form values
                 ctrl.form.profile.fillValues(
                     profile.shop_keeper, [
-                        "name", "phone", "kvk_number", "btw_number", "iban",
-                        "iban_name"
+                        "name", "phone", "kvk_number", "btw_number", "iban_name"
                     ]);
 
                 ctrl.form.profile.fillValues(
@@ -940,7 +939,14 @@ shopkeeperApp.service('AuthService', [
             apiRequest = ApiRequest;
 
             this.signIn = function(values) {
-                return ApiRequest.post('/shop-keepers/devices', values);
+                return ApiRequest.post('/../oauth/token', {
+                    'grant_type': 'password',
+                    'client_id': 2,
+                    'client_secret': 'DKbwNT3Afz8bovp0BXvJX5jWudIRRW9VZPbzieVJ',
+                    'username': values.email || '',
+                    'password': values.password || '',
+                    'scope': '*',
+                });
             };
 
             this.generateToken = function() {
@@ -961,6 +967,7 @@ shopkeeperApp.service('AuthService', [
         });
     }
 ]);
+
 shopkeeperApp.service('CategoryService', [
     '$http',
     '$q',

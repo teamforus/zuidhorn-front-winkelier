@@ -82,13 +82,6 @@
                 <p class="text-danger" ng-repeat="error in $ctrl.form.profile.errors.btw_number track by $index" ng-bind="error"></p>
               </div>
             </div>
-            <div class="col col-12">
-              <div class="form-group">
-                <label class="label">IBAN</label>
-                <input class="form-control" type="text" placeholder="IBAN" ng-model="$ctrl.form.profile.values.iban"/>
-                <p class="text-danger" ng-repeat="error in $ctrl.form.profile.errors.iban track by $index" ng-bind="error"></p>
-              </div>
-            </div>
           </div>
           <button class="hidden" type="submit"></button>
         </form>
