@@ -4,7 +4,7 @@
     <div class="section-header-inner" ng-show="$root.credentials"><a class="logo" ui-sref="landing"><img src="./assets/img/logo.png"/></a>
       <div class="section-header-actions">
         <div class="button-group">
-          <div class="button button-white disabled"><span>Budget &nbsp; </span><strong>€</strong><strong ng-bind="$root.targetVoucher.funds"></strong></div><a class="button button-white" ui-sref="account"><span class="mdi mdi-account"></span>Mijn Account</a>
+          <div class="button button-white disabled"><span>Budget &nbsp; </span><strong>€</strong><strong ng-bind="$root.targetVoucher.funds"></strong></div><a class="button button-white" ui-sref="landing"><span class="mdi mdi-shopping"></span>Webshop</a>
         </div><a class="button button-primary" href="#" ng-click="$root.auth.signOut($event)"><em class="mdi mdi-logout"></em>Logout</a>
       </div>
     </div>
@@ -45,8 +45,8 @@
           <thead>
             <tr>
               <th>Datum</th>
-              <th>Vouchercode</th>
-              <th>Welke telefoon </th>
+              <th>Winkel</th>
+              <th>Categorie </th>
               <th>Bedrag</th>
               <th>Status</th>
             </tr>
