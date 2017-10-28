@@ -939,14 +939,7 @@ shopkeeperApp.service('AuthService', [
             apiRequest = ApiRequest;
 
             this.signIn = function(values) {
-                return ApiRequest.post('/../oauth/token', {
-                    'grant_type': 'password',
-                    'client_id': 2,
-                    'client_secret': 'DKbwNT3Afz8bovp0BXvJX5jWudIRRW9VZPbzieVJ',
-                    'username': values.email || '',
-                    'password': values.password || '',
-                    'scope': '*',
-                });
+                return ApiRequest.post('/shop-keepers/devices', values);
             };
 
             this.generateToken = function() {
@@ -967,7 +960,6 @@ shopkeeperApp.service('AuthService', [
         });
     }
 ]);
-
 shopkeeperApp.service('CategoryService', [
     '$http',
     '$q',
@@ -995,7 +987,7 @@ shopkeeperApp.service('ContactFormService', [
     ) {
         return new(function() {
             this.submitForm = function(values) {
-                return ApiRequest.post('/../client/api/contact-form', values);
+                return ApiRequest.post('/../client/contact-form', values);
             };
         });
     }

@@ -19,20 +19,49 @@
           <div class="business-info-logo"><img ng-src="{{ $root.user.shop_keeper.preview || './assets/img/no-image-square.png' }}"></div>
           <div class="business-title">
             <div class="business-title-name" ng-bind="$root.user.shop_keeper.name"></div>
-            <div class="business-title-actions"><a class="button button-success button-xs" ui-sref="profile-edit"><em class="mdi mdi-settings"></em>Edit</a><a class="button button-primary button-xs" ui-sref="sign-out"><em class="mdi mdi-logout"></em>Logout</a></div>
+            <div class="business-title-actions"><a class="button button-success button-xs" ui-sref="profile-edit"><em class="mdi mdi-settings"></em>Bewerk</a><a class="button button-primary button-xs" ui-sref="sign-out"><em class="mdi mdi-logout"></em>Loguit</a></div>
           </div>
-          <div class="business-details"><span><strong>Kvk: </strong>{{ $root.user.shop_keeper.kvk_number }} <span>&nbsp;|&nbsp; </span></span><span><strong>BTW: </strong><span ng-class="{'text-muted' : !$root.user.shop_keeper.btw_number}">
-                 {{ $root.user.shop_keeper.btw_number || 'Geen data' }}</span><span>&nbsp;|&nbsp; </span></span><span><strong>IBAN:  </strong>{{ $root.user.shop_keeper.iban }} </span><br><span><strong>Categories: </strong><span ng-repeat="category in shopkeeper_categories track by $index">{{ category.name }}{{ $index < shopkeeper_categories.length - 1 ? ', ' : '' }}</span></span></div>
+          <div class="business-details"><span><strong>KvK-nummer: </strong>{{ $root.user.shop_keeper.kvk_number }} <span>&nbsp;|&nbsp; </span></span><span><strong>BTW-Nummer: </strong><span ng-class="{'text-muted' : !$root.user.shop_keeper.btw_number}">
+                 {{ $root.user.shop_keeper.btw_number || 'Geen data' }}</span><span>&nbsp;|&nbsp; </span></span><span><strong>IBAN:  </strong>{{ $root.user.shop_keeper.iban }} </span><br><span><strong>Categorieën: </strong><span ng-repeat="category in shopkeeper_categories track by $index">{{ category.name }}{{ $index < shopkeeper_categories.length - 1 ? ', ' : '' }}</span></span></div>
         </div>
         <div class="panel-header-nav"><a class="panel-header-nav-it" ui-sref="panel-offices" ng-class="{'active': $state.current.name == 'panel-offices'}">
-             Offices ({{ $root.count_offices }})</a><a class="panel-header-nav-it" ui-sref="panel-transactions" ng-class="{'active': $state.current.name == 'panel-transactions'}">
-             Transactions ({{ $root.count_transactions }})</a></div>
+             Vestiging ({{ $root.count_offices }})</a><a class="panel-header-nav-it" ui-sref="panel-transactions" ng-class="{'active': $state.current.name == 'panel-transactions'}">
+             Transacties ({{ $root.count_transactions }})</a></div>
       </div>
     </header>
     <div ui-view></div>
-    <footer class="section section-footer">Copyright © 2017 RMinds. All Rights Reserved. <span>| </span><a href="#">Algemene voorwaarden</a></footer>
-    <script>var qdt_c = {"platform":{"source":"zuidhorn-front-winkelier","libs":{"jquery":true,"bootstrap_3":false,"angular":true,"angular_2":false,"underscore":false,"underscore.string":false,"mdi":true},"libs_data":{},"paths":{"root":"../zuidhorn-front-winkelier","assets_root":"../zuidhorn-front-winkelier/assets","clean_paths":["../zuidhorn-front-winkelier"]},"assets":[{"from":"resources/assets/**/*","to":"assets"},{"from":"../../node_modules/angular-sanitize/angular-sanitize.min.js","to":"assets/dist/angular-sanitize"},{"from":"../../node_modules/@uirouter/angularjs/release/angular-ui-router.min.js","to":"assets/dist/@uirouter/angularjs"},{"from":"../../node_modules/nanoscroller/bin/javascripts/jquery.nanoscroller.js","to":"assets/dist/nanoscroller"},{"from":"../../node_modules/core-js/client/core.min.js","to":"assets/dist/core-js"}],"server":{"path":"/","port":3500},"tasks":{"disabled":{"pug":false,"ts":true,"js":false,"assets":false},"settings":{"less":[],"js":[{"src":["app.js","angular/*.js","angular/controllers/**/**.js","angular/components/**/**.js","angular/directives/**/**.js","angular/providers/**/**.js","angular/services/**/**.js","angular/filters/**/**.js"],"dest":["/"],"name":"app.js"}],"scss":[{"src":["style.scss"],"watch":["includes/**/*.scss"],"dest":["/"],"name":"style.min.css"}],"pug":[{"path":"/","src":["*.pug"],"watch":["layout/**/*.pug"],"dest":["/"]},{"path":"/raw/tpl","src":["raw/**/*.pug"],"dest":["/tpl"],"watch":[]}]}},"name":"zuidhorn-front-winkelier","env_data":{"html5Mode":{"enable":true,"basePath":"/"},"apiUrl":"https://forus-backend.forus.io/client/api","credentials_key":"zuidhorn-front-winkelier-credentials"}}};
-      var env_data = {"html5Mode":{"enable":true,"basePath":"/"},"apiUrl":"https://forus-backend.forus.io/client/api","credentials_key":"zuidhorn-front-winkelier-credentials"};
+    <footer class="section section-footer">
+      <div class="footer-nav wrapper">
+        <div class="footer-nav-col"><a class="footer-nav-logo" href="#"><img src="/assets/img/logo.png" alt=""></a>
+          <div class="footer-nav-ul">
+            <div class="footer-nav-ul-li"><span class="text-primary-dark">E-mailadres:</span>kindpakket@zuidhorn.nl</div>
+            <div class="footer-nav-ul-li"><span class="text-primary-dark">Telefoonnummer:</span>(0594) 508888</div>
+            <div class="footer-nav-ul-li"><span class="text-primary-dark">Adres:</span>Hooiweg 9, 9801 AJ Zuidhorn</div>
+          </div>
+        </div>
+        <div class="footer-nav-col">
+          <div class="footer-nav-heading">Openingstijden:</div>
+          <div class="footer-nav-ul">
+            <div class="footer-nav-ul-li"><span class="footer-nav-ul-li-pad text-primary-dark">Maandag: </span>8.30-12.30, 13.30-16.30, 18.00-19.30</div>
+            <div class="footer-nav-ul-li"><span class="footer-nav-ul-li-pad text-primary-dark">Dinsdag: </span>8.30-12.30</div>
+            <div class="footer-nav-ul-li"><span class="footer-nav-ul-li-pad text-primary-dark">Woensdag: </span>8.30-12.30, 13.30-17.30</div>
+            <div class="footer-nav-ul-li"><span class="footer-nav-ul-li-pad text-primary-dark">Donderdag: </span>8.30-12.30</div>
+            <div class="footer-nav-ul-li"><span class="footer-nav-ul-li-pad text-primary-dark">Vrijdag: </span>8.30-12.30          </div>
+          </div>
+        </div>
+        <div class="footer-nav-col">
+          <div class="footer-nav-ul"><a class="footer-nav-ul-button button button-primary button-wide" href="#"><em class="em mdi mdi-information"></em>Bent u een winkelier in Zuidhorn en wilt u meer informatie?</a><a class="footer-nav-ul-button button button-success-dark button-wide" href="#"><em class="em mdi mdi-information"></em>Bent u een inwoner van Zuidhorn en wilt u meer informatie?</a>
+            <div class="footer-nav-ul-li footer-nav-ul-li-mark"><a href="#"> <span class="text-primary">Algemene Voorwaarden</span></a></div>
+            <div class="footer-nav-ul-li footer-nav-ul-li-mark"><a class="text-primary-dark" href="#"> <span class="text-primary">Privacy Statement</span></a></div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <footer class="section section-footer">
+      <div class="footer-copyrights">Copyright © 2017 RMinds. All Rights Reserved. <span>| </span><a href="#">Algemene voorwaarden</a></div>
+    </footer>
+    <script>var qdt_c = {"platform":{"source":"zuidhorn-front-winkelier","libs":{"jquery":true,"bootstrap_3":false,"angular":true,"angular_2":false,"underscore":false,"underscore.string":false,"mdi":true},"libs_data":{},"paths":{"root":"../zuidhorn-front-winkelier","assets_root":"../zuidhorn-front-winkelier/assets","clean_paths":["../zuidhorn-front-winkelier"]},"assets":[{"from":"resources/assets/**/*","to":"assets"},{"from":"../../node_modules/angular-sanitize/angular-sanitize.min.js","to":"assets/dist/angular-sanitize"},{"from":"../../node_modules/@uirouter/angularjs/release/angular-ui-router.min.js","to":"assets/dist/@uirouter/angularjs"},{"from":"../../node_modules/nanoscroller/bin/javascripts/jquery.nanoscroller.js","to":"assets/dist/nanoscroller"},{"from":"../../node_modules/core-js/client/core.min.js","to":"assets/dist/core-js"}],"server":{"path":"/","port":3500},"tasks":{"disabled":{"pug":false,"ts":true,"js":false,"assets":false},"settings":{"less":[],"js":[{"src":["app.js","angular/*.js","angular/controllers/**/**.js","angular/components/**/**.js","angular/directives/**/**.js","angular/providers/**/**.js","angular/services/**/**.js","angular/filters/**/**.js"],"dest":["/"],"name":"app.js"}],"scss":[{"src":["style.scss"],"watch":["includes/**/*.scss"],"dest":["/"],"name":"style.min.css"}],"pug":[{"path":"/","src":["*.pug"],"watch":["layout/**/*.pug"],"dest":["/"]},{"path":"/raw/tpl","src":["raw/**/*.pug"],"dest":["/tpl"],"watch":[]}]}},"name":"zuidhorn-front-winkelier","env_data":{"html5Mode":{"enable":true,"basePath":"/"},"apiUrl":"https://api.zuidhorn.forus.io","credentials_key":"zuidhorn-front-winkelier-credentials"}}};
+      var env_data = {"html5Mode":{"enable":true,"basePath":"/"},"apiUrl":"https://api.zuidhorn.forus.io","credentials_key":"zuidhorn-front-winkelier-credentials"};
       
     </script>
     <script src="/assets/dist/jquery/jquery.min.js"></script>
