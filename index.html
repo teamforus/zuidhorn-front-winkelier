@@ -12,23 +12,6 @@
     <base href="/">
   </head>
   <body ng-cloak>
-    <header class="section section-landing-header" ng-if="$state.current.name == 'welcome'"><a class="logo" href="./"><img src="./assets/img/logo.png" alt="Logo"></a></header>
-    <header class="section section-panel-header" ng-if="$state.current.name != 'welcome'">
-      <div class="wrapper">
-        <div class="business-info">
-          <div class="business-info-logo"><img ng-src="{{ $root.user.shop_keeper.preview || './assets/img/no-image-square.png' }}"></div>
-          <div class="business-title">
-            <div class="business-title-name" ng-bind="$root.user.shop_keeper.name"></div>
-            <div class="business-title-actions"><a class="button button-success button-xs" ui-sref="profile-edit"><em class="mdi mdi-settings"></em>Bewerk</a><a class="button button-primary button-xs" ui-sref="sign-out"><em class="mdi mdi-logout"></em>Loguit</a></div>
-          </div>
-          <div class="business-details"><span><strong>KvK-nummer: </strong>{{ $root.user.shop_keeper.kvk_number }} <span>&nbsp;|&nbsp; </span></span><span><strong>BTW-Nummer: </strong><span ng-class="{'text-muted' : !$root.user.shop_keeper.btw_number}">
-                 {{ $root.user.shop_keeper.btw_number || 'Geen data' }}</span><span>&nbsp;|&nbsp; </span></span><span><strong>IBAN:  </strong>{{ $root.user.shop_keeper.iban }} </span><br><span><strong>Categorieën: </strong><span ng-repeat="category in shopkeeper_categories track by $index">{{ category.name }}{{ $index < shopkeeper_categories.length - 1 ? ', ' : '' }}</span></span></div>
-        </div>
-        <div class="panel-header-nav"><a class="panel-header-nav-it" ui-sref="panel-offices" ng-class="{'active': $state.current.name == 'panel-offices'}">
-             Vestiging ({{ $root.count_offices }})</a><a class="panel-header-nav-it" ui-sref="panel-transactions" ng-class="{'active': $state.current.name == 'panel-transactions'}">
-             Transacties ({{ $root.count_transactions }})</a></div>
-      </div>
-    </header>
     <div ui-view></div>
     <footer class="section section-footer">
       <div class="footer-nav wrapper">
