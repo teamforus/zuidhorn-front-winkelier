@@ -40,9 +40,12 @@ shopkeeperApp.config(['ApiRequestProvider', function(ApiRequestProvider) {
     ApiRequestProvider.setHost(env_data.apiUrl);
 }]);
 
-shopkeeperApp.config(['$stateProvider', '$locationProvider', function($stateProvider, $locationProvider) {
+shopkeeperApp.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', function($stateProvider, $locationProvider, $urlRouterProvider) {
     if (env_data.html5Mode.enable)
         $locationProvider.html5Mode(true);
+
+    // For any unmatched url, send to 404
+    $urlRouterProvider.otherwise('/404');
 
     $stateProvider
         .state({
@@ -115,6 +118,34 @@ shopkeeperApp.config(['$stateProvider', '$locationProvider', function($stateProv
                 title: "Transactions"
             }
         });
+
+    // Transactions crud
+    $stateProvider
+        .state({
+            url: '/access-denied',
+            name: 'access-denied',
+            component: 'responseCodeComponent',
+            data: {
+                icon: 'icon-access.png',
+                title: "Toegang geweigerd",
+                title_bg: 'ACCESS DENIED',
+                desc: "U bent niet geautoriseerd om deze pagina te bekijken.",
+            }
+        });
+
+    // Transactions crud
+    $stateProvider
+        .state({
+            url: '/404',
+            name: '404',
+            component: 'responseCodeComponent',
+            data: {
+                icon: 'icon-404.png',
+                title: "Oeps... 404",
+                title_bg: 'PAGE NOT FOUND',
+                desc: "De pagina die u zoekt is niet gevonden.",
+            }
+        });
 }]);
 
 if (!env_data.html5Mode.enable)
@@ -175,7 +206,7 @@ shopkeeperApp.controller('BaseController', [
             AuthService.getUser().then(function(response) {
                 $rootScope.user = response.data || {};
 
-                ShopKeeperService.getShopKeeperCategories($rootScope.user.shop_keeper.id).then(function(response) {
+                ShopKeeperService.getShopKeeperCategories().then(function(response) {
                     $rootScope.shopkeeper_categories = response.data || {};
                 });
             });
@@ -241,6 +272,16 @@ shopkeeperApp.component('panelOfficesComponent', {
                 OfficeService.getOffices().then(function(response) {
                     ctrl.offices = response.data;
                 }, console.log);
+
+                ctrl.deleteOffice = function(e, id) {
+                    e && (e.preventDefault() & e.stopPropagation());
+
+                    OfficeService.delete(id).then(function(response) {
+                        ctrl.$onInit();
+                    }, function() {
+                        ctrl.$onInit();
+                    })
+                }
             };
         }
     ]
@@ -251,6 +292,7 @@ shopkeeperApp.component('panelOfficesCreateComponent', {
         '$q',
         '$rootScope',
         '$state',
+        '$filter',
         '$stateParams',
         '$scope',
         'AuthService',
@@ -262,6 +304,7 @@ shopkeeperApp.component('panelOfficesCreateComponent', {
             $q,
             $rootScope,
             $state,
+            $filter,
             $stateParams,
             $scope,
             AuthService,
@@ -290,6 +333,7 @@ shopkeeperApp.component('panelOfficesCreateComponent', {
 
                 ctrl.office = office;
                 ctrl.schedule_options = {};
+                ctrl.schedule_options['none'] = 'Rustdag';
 
                 for (var i = 0; i < 24; i++) {
                     var hour = (i <= 9 ? '0' : '') + i;
@@ -313,10 +357,35 @@ shopkeeperApp.component('panelOfficesCreateComponent', {
                 }, {
                     start_time: '09:00',
                     end_time: '17:00',
+                }, {
+                    start_time: 'none',
+                    end_time: 'none',
+                }, {
+                    start_time: 'none',
+                    end_time: 'none',
                 }];
 
                 // fill profile form values
                 ctrl.form.office.fillValues(office, ["email", "phone", "address", 'schedules']);
+
+                ctrl.changeScheduleStart = function(schedules, week_day) {
+                    try {
+                        if (schedules[week_day].start_time == 'none')
+                            return schedules[week_day].end_time = 'none';
+
+                        var int_start = $filter('timeToInt')(
+                            schedules[week_day].start_time);
+
+                        var int_end = $filter('timeToInt')(
+                            schedules[week_day].end_time);
+
+                        if ((int_start > int_end) || (schedules[week_day].end_time == 'none'))
+                            schedules[week_day].end_time = schedules[week_day].start_time;
+                    } catch (e) {
+                        schedules[week_day].start_time = '09:00';
+                        schedules[week_day].end_time = '17:00';
+                    }
+                };
 
                 // submit form to api
                 ctrl.submitForm = function(e, form) {
@@ -362,6 +431,14 @@ shopkeeperApp.component('panelOfficesCreateComponent', {
                         photoForupload = e.target.files[0];
                     });
                 }
+
+                $q(function() {
+                    ((function(schedules) {
+                        for (var i = schedules.length - 1; i >= 0; i--) {
+                            ctrl.changeScheduleStart(schedules, i);
+                        }
+                    })(ctrl.form.office.values.schedules));
+                }, 100);
             };
         }
     ]
@@ -372,6 +449,7 @@ shopkeeperApp.component('panelOfficesEditComponent', {
         '$q',
         '$rootScope',
         '$state',
+        '$filter',
         '$stateParams',
         '$scope',
         'AuthService',
@@ -383,6 +461,7 @@ shopkeeperApp.component('panelOfficesEditComponent', {
             $q,
             $rootScope,
             $state,
+            $filter,
             $stateParams,
             $scope,
             AuthService,
@@ -413,9 +492,10 @@ shopkeeperApp.component('panelOfficesEditComponent', {
                 };
 
                 promises[map.office] = $q(function(resolve, reject) {
-                    OfficeService.getOffice($stateParams.id).then(function(response) {
-                        resolve(response.data);
-                    });
+                    OfficeService.getOffice($stateParams.id).then(
+                        function(response) {
+                            resolve(response.data);
+                        });
                 });
 
                 $q.all(promises).then(function(promises) {
@@ -423,6 +503,7 @@ shopkeeperApp.component('panelOfficesEditComponent', {
 
                     ctrl.office = office;
                     ctrl.schedule_options = {};
+                    ctrl.schedule_options['none'] = 'Rustdag';
 
                     for (var i = 0; i < 24; i++) {
                         var hour = (i <= 9 ? '0' : '') + i;
@@ -431,8 +512,43 @@ shopkeeperApp.component('panelOfficesEditComponent', {
                         ctrl.schedule_options[hour + ':30'] = hour + ':30';
                     }
 
+                    [0, 1, 2, 3, 4, 5, 6].forEach(function(week_day) {
+                        if (typeof office.schedules[week_day] == 'undefined') {
+                            office.schedules[week_day] = {
+                                start_time: [5, 6].indexOf(week_day) != -1 ? '09:00' : 'none',
+                                end_time: [5, 6].indexOf(week_day) != -1 ? '17:00' : 'none'
+                            };
+                        } else {
+                            if (!office.schedules[week_day].start_time)
+                                office.schedules[week_day].start_time = 'none';
+                            
+                            if (!office.schedules[week_day].end_time)
+                                office.schedules[week_day].end_time = 'none';
+                        }
+                    });
+
                     // fill profile form values
-                    ctrl.form.office.fillValues(office, ["email", "phone", "address", 'schedules']);
+                    ctrl.form.office.fillValues(
+                        office, ["email", "phone", "address", 'schedules']);
+                    
+                    ctrl.changeScheduleStart = function(schedules, week_day) {
+                        try {
+                            if (schedules[week_day].start_time == 'none')
+                                return schedules[week_day].end_time = 'none';
+
+                            var int_start = $filter('timeToInt')(
+                                schedules[week_day].start_time);
+
+                            var int_end = $filter('timeToInt')(
+                                schedules[week_day].end_time);
+
+                            if ((int_start > int_end) || (schedules[week_day].end_time == 'none'))
+                                schedules[week_day].end_time = schedules[week_day].start_time;
+                        } catch (e) {
+                            schedules[week_day].start_time = '09:00';
+                            schedules[week_day].end_time = '17:00';
+                        }
+                    };
 
                     // submit form to api
                     ctrl.submitForm = function(e, form) {
@@ -443,14 +559,17 @@ shopkeeperApp.component('panelOfficesEditComponent', {
 
                         form.lock();
 
-                        OfficeService.update(office.id, form.values).then(function() {
-                            form.reset().unlock();
+                        OfficeService.update(office.id, form.values).then(
+                            function() {
+                                $scope.$emit('user:sync');
+                                $state.go('panel-offices');
 
-                            $scope.$emit('user:sync');
-                            $state.go('panel-offices');
-                        }, function(response) {
-                            form.fillErrors(response.data).unlock();
-                        });
+                                form.reset().unlock();
+                            },
+                            function(response) {
+                                form.fillErrors(response.data).unlock();
+                            }
+                        );
                     };
 
                     ctrl.selectPhoto = function(e) {
@@ -458,6 +577,7 @@ shopkeeperApp.component('panelOfficesEditComponent', {
 
                         input = document.createElement('input');
                         input.setAttribute("type", "file");
+                        input.setAttribute("accept", "image/*");
 
                         input.addEventListener('change', function(e) {
                             OfficeService.updatePhoto(
@@ -472,6 +592,14 @@ shopkeeperApp.component('panelOfficesEditComponent', {
 
                         input.click();
                     }
+
+                    $q(function() {
+                        ((function(schedules) {
+                            for (var i = schedules.length - 1; i >= 0; i--) {
+                                ctrl.changeScheduleStart(schedules, i);
+                            }
+                        })(ctrl.form.office.values.schedules));
+                    }, 100);
                 });
             };
         }
@@ -530,7 +658,7 @@ shopkeeperApp.component('panelProfileEditComponent', {
                 });
 
                 promises[map.profile_categories] = $q(function(resolve, reject) {
-                    ShopKeeperService.getShopKeeperCategories($rootScope.user.shop_keeper.id).then(function(response) {
+                    ShopKeeperService.getShopKeeperCategories().then(function(response) {
                         resolve(response.data);
                     });
                 });
@@ -610,13 +738,12 @@ shopkeeperApp.component('panelProfileEditComponent', {
                     form.lock();
 
                     ShopKeeperService.update(
-                        profile.shop_keeper.id,
                         form.values
                     ).then(function(response) {
-                        form.reset().unlock();
-
                         $scope.$emit('user:sync');
                         $state.go('panel-offices');
+
+                        form.reset().unlock();
                     }, function(response) {
                         form.fillErrors(response.data).unlock();
                     });
@@ -627,10 +754,10 @@ shopkeeperApp.component('panelProfileEditComponent', {
 
                     input = document.createElement('input');
                     input.setAttribute("type", "file");
+                    input.setAttribute("accept", "image/*");
 
                     input.addEventListener('change', function(e) {
                         ShopKeeperService.updatePhoto(
-                            profile.shop_keeper.id,
                             e.target.files[0]
                         ).then(function(response) {
                             $scope.$emit('user:sync');
@@ -665,6 +792,25 @@ shopkeeperApp.component('panelTransactionsComponent', {
                     ctrl.transactions = response.data;
                 }, console.log);
             };
+        }
+    ]
+});
+shopkeeperApp.component('responseCodeComponent', {
+    templateUrl: './tpl/pages/response-code.html',
+    controller: [
+        '$rootScope',
+        '$state',
+        '$scope',
+        'CredentialsService',
+        function(
+            $rootScope,
+            $state,
+            $scope,
+            CredentialsService
+        ) {
+            var ctrl = this;
+            
+            ctrl.$state = $state;
         }
     ]
 });
@@ -817,6 +963,66 @@ shopkeeperApp.directive('contactForm', [
         };
     }
 ]);
+shopkeeperApp.directive('panelHeader', [
+    'ContactFormService',
+    'FormBuilderService',
+    function(
+        ContactFormService,
+        FormBuilderService
+    ) {
+        return {
+            restrict: 'A',
+            templateUrl: './tpl/directives/panel-header.html',
+            replace: true,
+            transclude: true,
+            scope: true,
+            link: function($scope, iElm, iAttrs, controller) {
+                $scope.subjects = [{
+                    key: 'other',
+                    name: 'Anders'
+                }, {
+                    key: 'budget',
+                    name: 'Budget'
+                }, {
+                    key: 'recht_op_kindpakket',
+                    name: 'Recht op Kindpakket'
+                }, {
+                    key: 'tehnical_issuse',
+                    name: 'Technisch'
+                }, {
+                    key: 'logging_in',
+                    name: 'Logging in'
+                }];
+
+                $scope.forms = {};
+                $scope.forms.contact_form = FormBuilderService.build();
+                $scope.forms.contact_form.values.subject = $scope.subjects[0];
+
+                $scope.submitContactForm = function(e, form) {
+                    e && (e.preventDefault() & e.stopPropagation());
+
+                    if (form.submited)
+                        return;
+
+                    var values = JSON.parse(JSON.stringify(form.values));
+
+                    values.subject = values.subject.key;
+
+                    form.submited = true;
+
+                    ContactFormService.submitForm(values).then(function(response) {
+                        form.submited = false;
+                        form.success = true;
+                        form.reset();
+                    }, function(response) {
+                        form.errors = response.data;
+                        form.submited = false;
+                    });
+                };
+            }
+        };
+    }
+]);
 shopkeeperApp.provider('ApiRequest', function() {
     return new(function() {
         var host = false;
@@ -888,6 +1094,10 @@ shopkeeperApp.provider('ApiRequest', function() {
                         $http(params).then(function(response) {
                             done(response);
                         }, function(response) {
+                            if (!debug && (response.status == 404)) {
+                                $state.go('404');
+                            }
+
                             if (!debug && (response.status == 401)) {
                                 if ((response.data.error == 'device-pending') ||
                                     (response.data.error == 'device-unknown'))
@@ -907,6 +1117,8 @@ shopkeeperApp.provider('ApiRequest', function() {
                                     return $rootScope.$broadcast(
                                         'auth:unauthenticated', response.data);
                                 }
+
+                                $state.go('access-denied');
                             }
 
                             reject(response);
@@ -1101,6 +1313,12 @@ shopkeeperApp.service('OfficeService', [
                 return ApiRequest.post('/offices/' + id, values);
             };
 
+            this.delete = function(id) {
+                return ApiRequest.post('/offices/' + id, {
+                    _method: 'DELETE'
+                });
+            };
+
             this.create = function(values) {
                 return ApiRequest.post('/offices', values);
             };
@@ -1137,21 +1355,21 @@ shopkeeperApp.service('ShopKeeperService', [
             getShopKeeper: function() {
                 return ApiRequest.get('/categories');
             },
-            getShopKeeperCategories: function(id) {
-                return ApiRequest.get('/shop-keepers/' + id + '/categories');
+            getShopKeeperCategories: function() {
+                return ApiRequest.get('/shop-keepers/categories');
             },
-            update: function(id, values) {
+            update: function(values) {
                 values._method = "PUT";
 
-                return ApiRequest.post('/shop-keepers/' + id, values);
+                return ApiRequest.post('/shop-keepers', values);
             },
-            updatePhoto: function(id, image) {
+            updatePhoto: function(image) {
                 var formData = new FormData();
 
                 formData.append('image', image);
                 formData.append('_method', 'PUT');
 
-                return ApiRequest.post('/shop-keepers/' + id + '/image', formData, {
+                return ApiRequest.post('/shop-keepers/image', formData, {
                     'Content-Type': undefined
                 });
             }
@@ -1234,7 +1452,7 @@ shopkeeperApp.filter('number_format', function() {
             s[1] = s[1] || ''
             s[1] += new Array(prec - s[1].length + 1).join('0')
         }
-        
+
         return s.join(dec)
     }
 });
@@ -1264,3 +1482,43 @@ shopkeeperApp.filter('not_in', function() {
         return out;
     }
 });
+
+shopkeeperApp.filter('timeToInt', function() {
+    return function(_in) {
+        if (typeof _in != 'string')
+            return -1;
+
+        _in = _in.split(":");
+
+        return _in[0] * 60 + parseInt(_in[1]);
+    }
+});
+
+shopkeeperApp.filter('limitScheduleOptionBy', ['$filter', function($filter) {
+    return function(_in, _by) {
+        var _out = {};
+
+        if (_by == 'none')
+            return {'none' : _in['none']}
+
+        if ((typeof _in == 'undefined') || !_by)
+            return _in;
+
+        _by = $filter('timeToInt')(_by);
+
+        Object.values(_in).forEach(function(opt) {
+            if ($filter('timeToInt')(opt) >= _by)
+                _out[opt] = opt;
+        });
+
+        return _out;
+    }
+}]);
+
+shopkeeperApp.filter('only_working_schedule', ['$filter', function($filter) {
+    return function(_in) {
+        return _in.filter(function(schedule) {
+            return schedule.start_time;
+        });
+    }
+}]);
