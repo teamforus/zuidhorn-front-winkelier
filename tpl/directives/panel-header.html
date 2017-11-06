@@ -8,7 +8,7 @@
         <div class="business-title-actions"><a class="button button-success button-xs" ui-sref="profile-edit"><em class="mdi mdi-settings"></em>Bewerk</a><a class="button button-primary button-xs" ui-sref="sign-out"><em class="mdi mdi-logout"></em>Loguit</a></div>
       </div>
       <div class="business-details"><span><strong>KvK-nummer: </strong>{{ $root.user.shop_keeper.kvk_number }} <span>&nbsp;|&nbsp; </span></span><span><strong>BTW-Nummer: </strong><span ng-class="{'text-muted' : !$root.user.shop_keeper.btw_number}">
-             {{ $root.user.shop_keeper.btw_number || 'Geen data' }}</span><span>&nbsp;|&nbsp; </span></span><span><strong>IBAN:  </strong>{{ $root.user.shop_keeper.iban }} </span><br/><span><strong>Categorieën: </strong><span ng-repeat="category in shopkeeper_categories track by $index">{{ category.name }}{{ $index < shopkeeper_categories.length - 1 ? ', ' : '' }}</span></span></div>
+             {{ $root.user.shop_keeper.btw_number || 'Geen data' }}</span><span>&nbsp;|&nbsp; </span></span><span><strong>IBAN:  </strong>{{ $root.user.shop_keeper.iban }} </span><br/><span><strong>Categorieën: </strong><span ng-repeat="category in $root.shopkeeper_categories track by $index">{{ category.name }}{{ $index < $root.shopkeeper_categories.length - 1 ? ', ' : '' }}</span></span></div>
     </div>
     <div class="panel-header-nav"><a class="panel-header-nav-it" ui-sref="panel-offices" ng-class="{'active': $root.$state.current.name == 'panel-offices'}">
          Vestiging ({{ $root.count_offices }})</a><a class="panel-header-nav-it" ui-sref="panel-transactions" ng-class="{'active': $root.$state.current.name == 'panel-transactions'}">
