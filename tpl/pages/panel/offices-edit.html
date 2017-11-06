@@ -37,7 +37,7 @@
             <div class="col col-12">
               <div class="form-group">
                 <label class="label">Adres</label>
-                <input class="form-control" type="text" placeholder="Adres" ng-model="$ctrl.form.office.values.address"/>
+                <input class="form-control" type="text" placeholder="Adres" ng-model="$ctrl.form.office.values.address" google-address="google-address"/>
                 <p class="text-danger" ng-repeat="error in $ctrl.form.office.errors.address track by $index" ng-bind="error"></p>
               </div>
             </div>

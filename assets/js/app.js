@@ -521,7 +521,7 @@ shopkeeperApp.component('panelOfficesEditComponent', {
                         } else {
                             if (!office.schedules[week_day].start_time)
                                 office.schedules[week_day].start_time = 'none';
-                            
+
                             if (!office.schedules[week_day].end_time)
                                 office.schedules[week_day].end_time = 'none';
                         }
@@ -530,7 +530,7 @@ shopkeeperApp.component('panelOfficesEditComponent', {
                     // fill profile form values
                     ctrl.form.office.fillValues(
                         office, ["email", "phone", "address", 'schedules']);
-                    
+
                     ctrl.changeScheduleStart = function(schedules, week_day) {
                         try {
                             if (schedules[week_day].start_time == 'none')
@@ -963,6 +963,36 @@ shopkeeperApp.directive('contactForm', [
         };
     }
 ]);
+shopkeeperApp.directive('googleAddress', [function() {
+    return {
+        restrict: 'A',
+        replace: true,
+        transclude: true,
+        scope: true,
+        link: function($scope, iElm, iAttrs, controller) {
+            function initAutocomplete() {
+                // Create the autocomplete object, restricting the search to geographical
+                // location types.
+                autocomplete = new google.maps.places.Autocomplete(
+                    /** @type {!HTMLInputElement} */
+                    iElm[0], {
+                        types: ['geocode']
+                    });
+
+                // When the user selects an address from the dropdown, populate the address
+                // fields in the form.
+                $(iElm[0]).bind('keydown', function(event) {
+                    if (event.keyCode == 13) {
+                        event.preventDefault();
+                        return false;
+                    }
+                });
+            }
+
+            initAutocomplete();
+        }
+    };
+}]);
 shopkeeperApp.directive('panelHeader', [
     'ContactFormService',
     'FormBuilderService',
